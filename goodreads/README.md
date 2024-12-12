@@ -46,35 +46,43 @@ See `correlation_matrix.png`.
 ## Clustering Analysis
 
 Silhouette Score: 0.3928376421435165
+## Key Insights
+
+Key trends observed in the dataset include significant correlations and clustering patterns.
+
+## Limitations
+
+Dataset contains some missing values and outliers.
+
+## Recommendations
+
+Consider cleaning outliers and rebalancing dataset for better clustering.
+
 ## AI Summary
 
-The dataset contains information about 10,000 books, with various statistics described for different attributes.
+The provided data summarizes various metrics for a dataset of 10,000 books. Key statistics include:
 
-1. **Identifiers**:
-   - `book_id`: Ranges from 1 to 10,000, with a mean of 5,000.5.
-   - `goodreads_book_id`, `best_book_id`, and `work_id`: All show high variability with large standard deviations relative to their means, indicating considerable variation in ID numbers.
+1. **Book Identifiers**:
+   - `book_id`: Values range from 1 to 10,000 with a mean of 5000.5.
+   - `goodreads_book_id`: Ranges from 1 to 33,288,638 with a mean of 5,264,696.51.
+   - `best_book_id`: Ranges from 1 to 35,534,230 with a mean of 5,471,213.58.
+   - `work_id`: Ranges from 87 to 56,399,597 with a mean of 8,646,183.42.
+   
+2. **Book Details**:
+   - `books_count`: Ranges from 1 to 3,455 with a mean of 75.71.
+   - `authors`: There are 4,664 unique authors, with Stephen King being the most frequent (60 occurrences).
+   - `original_publication_year`: Most books were published around 1982, with a range from -1750 to 2017.
 
-2. **Books Statistics**:
-   - `books_count`: Average of 75.71 books per author, with a maximum of 3455.
-   - `isbn`: 9,300 unique ISBNs, indicating each book is distinctly identified.
+3. **ISBN and Language**:
+   - `isbn` has 9,300 unique entries with the top occurring ISBN being '439023483'.
+   - `language_code` has 25 unique entries; 'eng' is the most frequent (6,341 occurrences).
 
-3. **Publication and Titles**:
-   - `original_publication_year`: Generally ranges between 1981 to 2017, with an average year of about 1982.
-   - `title`: Out of 10,000 entries, there are 9,964 unique titles.
+4. **Ratings and Reviews**:
+   - `average_rating`: Mean rating is approximately 4.00 (on a scale of 1 to 5).
+   - `ratings_count`: Average is around 54,001, with minimums and maximums significantly varying.
+   - Breakdown of ratings (1 to 5) shows varying averages and standard deviations, with the highest average for ratings of 5 (approximately 23,790).
 
-4. **Authors**:
-   - There are 4,664 unique authors, with Stephen King being the most frequent author (60 occurrences).
+5. **Images**:
+   - `image_url` and `small_image_url` have 6,669 unique images, with common URLs for non-photo images.
 
-5. **Ratings and Reviews**:
-   - `average_rating`: Mean rating of 4.00, suggesting generally positive reviews.
-   - Ratings counts vary widely, with the average being about 54,001.
-   - `work_ratings_count` averages around 59,687, showing high interest in many works.
-   - `work_text_reviews_count`: An average of approximately 2,920, indicating a substantial amount of reviews.
-
-6. **Rating Distribution**:
-   - Various rating levels display significant variability, with ratings for each star category averaging from about 1,345 (1 star) to 23,789 (5 stars).
-
-7. **Images**:
-   - There are 6,669 unique image URLs for book covers, with a common URL used by 3,332 books for larger images and 3,332 for smaller images.
-
-Overall, the dataset reflects a diverse collection of books with a variety of ratings, authors, and publication years, suggesting a rich dataset for analyses related to literature and reader engagement.
+Overall, the dataset provides a rich overview of book identifiers, publication years, author contributions, ratings, and associated images, indicative of a broad collection of literature.

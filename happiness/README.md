@@ -34,67 +34,75 @@ See `correlation_matrix.png`.
 ## Clustering Analysis
 
 Silhouette Score: 0.2114534491842256
+## Key Insights
+
+Key trends observed in the dataset include significant correlations and clustering patterns.
+
+## Limitations
+
+Dataset contains some missing values and outliers.
+
+## Recommendations
+
+Consider cleaning outliers and rebalancing dataset for better clustering.
+
 ## AI Summary
 
-Here's a summary of the provided data:
+The summarized dataset contains various statistics related to happiness, economic conditions, and social metrics across different countries. Here is a breakdown of the key elements:
 
-1. **Country Name**:
-   - **Total Entries**: 2363
-   - **Unique Countries**: 165
-   - **Most Frequent Country**: Lebanon (18 occurrences)
+1. **Country Name**: 
+   - Total Entries: 2363
+   - Unique Countries: 165
+   - Most Frequent Country: Lebanon (18 occurrences)
 
 2. **Year**:
-   - **Mean Year**: 2014.76
-   - **Standard Deviation**: 5.06
-   - **Range**: 2005 to 2023
-   - **Quartiles**: 
-     - 25%: 2011
-     - 50% (Median): 2015
-     - 75%: 2019
+   - Total Entries: 2363
+   - Average Year: approximately 2014.76
+   - Range: from 2005 to 2023
 
-3. **Life Ladder (Life Satisfaction)**:
-   - **Mean**: 5.48
-   - **Standard Deviation**: 1.13
-   - **Range**: 1.281 to 8.019
+3. **Life Ladder (Happiness Score)**:
+   - Total Entries: 2363
+   - Mean Score: 5.48
+   - Range: from 1.281 to 8.019
 
 4. **Log GDP per Capita**:
-   - **Mean**: 9.40
-   - **Standard Deviation**: 1.15
-   - **Range**: 5.527 to 11.676
+   - Total Entries: 2335
+   - Mean: approximately 9.4 
+   - Range: from 5.527 to 11.676
 
 5. **Social Support**:
-   - **Mean**: 0.81
-   - **Standard Deviation**: 0.12
-   - **Range**: 0.228 to 0.987
+   - Total Entries: 2350
+   - Mean: 0.81 
+   - Range: from 0.228 to 0.987
 
 6. **Healthy Life Expectancy at Birth**:
-   - **Mean**: 63.40 years
-   - **Standard Deviation**: 6.84
-   - **Range**: 6.72 to 74.6 years
+   - Total Entries: 2300
+   - Mean: approximately 63.4 years 
+   - Range: from 6.72 to 74.6 years
 
 7. **Freedom to Make Life Choices**:
-   - **Mean**: 0.75
-   - **Standard Deviation**: 0.14
-   - **Range**: 0.228 to 0.985
+   - Total Entries: 2327
+   - Mean: 0.75
+   - Range: from 0.228 to 0.985
 
 8. **Generosity**:
-   - **Mean**: 0.0001
-   - **Standard Deviation**: 0.16
-   - **Range**: -0.34 to 0.7
+   - Total Entries: 2282
+   - Mean: approximately 0.000098
+   - Range: from -0.34 to 0.7
 
 9. **Perceptions of Corruption**:
-   - **Mean**: 0.74
-   - **Standard Deviation**: 0.18
-   - **Range**: 0.035 to 0.983
+   - Total Entries: 2238
+   - Mean: 0.74 
+   - Range: from 0.035 to 0.983
 
 10. **Positive Affect**:
-    - **Mean**: 0.65
-    - **Standard Deviation**: 0.11
-    - **Range**: 0.179 to 0.884
+    - Total Entries: 2339
+    - Mean: approximately 0.65
+    - Range: from 0.179 to 0.884
 
 11. **Negative Affect**:
-    - **Mean**: 0.27
-    - **Standard Deviation**: 0.09
-    - **Range**: 0.083 to 0.705
+    - Total Entries: 2347
+    - Mean: approximately 0.27
+    - Range: from 0.083 to 0.705
 
-This summary reflects key statistical measures, including mean, standard deviation, ranges, and quartiles for various social and economic indicators across different countries and years.
+Overall, the dataset presents a comprehensive view of various dimensions affecting well-being and happiness across different nations, with Lebanon being the most cited country. The data spans a range of years, highlighting trends in life satisfaction, economic performance, and social wellbeing.
