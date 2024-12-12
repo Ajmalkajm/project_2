@@ -29,30 +29,72 @@ None
 
 ## Correlation Matrix
 
-See the `correlation_matrix.png` file.
+See `correlation_matrix.png`.
 
+## Clustering Analysis
+
+Silhouette Score: 0.2114534491842256
 ## AI Summary
 
-This analysis presents statistics on various social and economic indicators across 2363 observations from multiple countries. Key points include:
+Here's a summary of the provided data:
 
-- **Country Distribution**: There are 165 unique countries, with Lebanon being the most frequently reported country (18 occurrences).
-  
-- **Years Studied**: The data spans from 2005 to 2023, with a mean year of approximately 2015.75 (standard deviation of about 5).
+1. **Country Name**:
+   - **Total Entries**: 2363
+   - **Unique Countries**: 165
+   - **Most Frequent Country**: Lebanon (18 occurrences)
 
-- **Life Ladder**: The mean score is approximately 5.48, indicating overall life satisfaction, with a range from 1.28 to 8.02.
+2. **Year**:
+   - **Mean Year**: 2014.76
+   - **Standard Deviation**: 5.06
+   - **Range**: 2005 to 2023
+   - **Quartiles**: 
+     - 25%: 2011
+     - 50% (Median): 2015
+     - 75%: 2019
 
-- **Log GDP per Capita**: The average log GDP per capita is about 9.40, ranging from 5.53 to 11.68, suggesting varied economic conditions.
+3. **Life Ladder (Life Satisfaction)**:
+   - **Mean**: 5.48
+   - **Standard Deviation**: 1.13
+   - **Range**: 1.281 to 8.019
 
-- **Social Support**: Average social support scores are around 0.81, indicating decent levels of community support.
+4. **Log GDP per Capita**:
+   - **Mean**: 9.40
+   - **Standard Deviation**: 1.15
+   - **Range**: 5.527 to 11.676
 
-- **Healthy Life Expectancy**: The average is about 63.40 years, with a range from 6.72 to 74.60 years.
+5. **Social Support**:
+   - **Mean**: 0.81
+   - **Standard Deviation**: 0.12
+   - **Range**: 0.228 to 0.987
 
-- **Freedom to Make Life Choices**: The mean score is approximately 0.75, reflecting reasonable levels of perceived freedom.
+6. **Healthy Life Expectancy at Birth**:
+   - **Mean**: 63.40 years
+   - **Standard Deviation**: 6.84
+   - **Range**: 6.72 to 74.6 years
 
-- **Generosity**: The average level of generosity is extremely low (about 0.0001), with a small positive range.
+7. **Freedom to Make Life Choices**:
+   - **Mean**: 0.75
+   - **Standard Deviation**: 0.14
+   - **Range**: 0.228 to 0.985
 
-- **Perceptions of Corruption**: The average score is about 0.74, suggesting a relatively high perception of corruption.
+8. **Generosity**:
+   - **Mean**: 0.0001
+   - **Standard Deviation**: 0.16
+   - **Range**: -0.34 to 0.7
 
-- **Positive and Negative Affects**: The average positive affect is approximately 0.65, while the average negative affect is around 0.27, indicating a generally positive emotional state among populations.
+9. **Perceptions of Corruption**:
+   - **Mean**: 0.74
+   - **Standard Deviation**: 0.18
+   - **Range**: 0.035 to 0.983
 
-Overall, the dataset provides a comprehensive look at various quality of life measurements, economic indicators, and social perceptions across countries over the specified years.
+10. **Positive Affect**:
+    - **Mean**: 0.65
+    - **Standard Deviation**: 0.11
+    - **Range**: 0.179 to 0.884
+
+11. **Negative Affect**:
+    - **Mean**: 0.27
+    - **Standard Deviation**: 0.09
+    - **Range**: 0.083 to 0.705
+
+This summary reflects key statistical measures, including mean, standard deviation, ranges, and quartiles for various social and economic indicators across different countries and years.

@@ -26,19 +26,29 @@ None
 
 ## Correlation Matrix
 
-See the `correlation_matrix.png` file.
+See `correlation_matrix.png`.
 
+## Clustering Analysis
+
+Silhouette Score: 0.4610291451535691
 ## AI Summary
 
-The analysis provides statistics on a dataset containing 2,652 entries. Key findings include:
+The dataset contains various statistics about a collection of entries, likely related to movies. Here’s a summary of the key points:
 
-- **Dates**: There are 2,553 date entries with 2,055 unique dates. The most frequent date is '21-May-06', appearing 8 times.
-- **Languages**: The entries are predominantly in English, which accounts for 1,306 entries; there are a total of 11 unique languages.
-- **Types**: Most entries are categorized as 'movie', with 2,211 occurrences out of 2,652.
-- **Titles**: There are 2,312 unique titles, with 'Kanda Naal Mudhal' being the most common, appearing 9 times.
-- **Creators**: The dataset includes 2,390 entries with 1,528 unique creators, the most frequent being Kiefer Sutherland, appearing 48 times.
-- **Overall Ratings**: The average rating is approximately 3.05 (with a standard deviation of about 0.76) on a scale from 1 to 5, indicating generally favorable feedback.
-- **Quality Ratings**: The mean quality rating is around 3.21 (SD: 0.80), also showing a positive assessment.
-- **Repeatability Ratings**: The average repeatability score is approximately 1.49 (SD: 0.60), with the majority of entries rated at 1 or 2.
+- **Date**: There are a total of 2,553 entries spread across 2,055 unique dates, with '21-May-06' being the most frequent date (8 occurrences).
+  
+- **Language**: The dataset includes 2,652 entries with 11 unique languages. 'English' is the most common language, appearing 1,306 times.
+  
+- **Type**: Among the 2,652 entries classified into 8 types, 'movie' is the predominant type, occurring 2,211 times.
 
-Overall, the dataset reflects a focus on movies, primarily in English, with generally positive ratings both in overall quality and repeatability.
+- **Title**: There are 2,652 entries with 2,312 unique titles. The title 'Kanda Naal Mudhal' appears the most frequently (9 times).
+
+- **By**: The dataset includes contributions from 2,390 entries with 1,528 unique contributors. 'Kiefer Sutherland' is the most frequently mentioned contributor, appearing 48 times.
+
+- **Overall Rating**: The average overall rating is approximately 3.05, with a standard deviation of 0.76. Ratings range from 1 to 5.
+
+- **Quality Rating**: The average quality rating is about 3.21 with a standard deviation of 0.80, with ratings also ranging from 1 to 5.
+
+- **Repeatability**: The average repeatability score is roughly 1.49, indicating entries are often not repeated, with scores ranging from 1 to 3.
+
+Overall, the dataset provides a comprehensive look at a diverse collection of movie-related entries, highlighting trends in dates, languages, and ratings.
