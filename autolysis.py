@@ -9,6 +9,7 @@
 #   "opencv-python",
 #   "openai",
 #   "tabulate",
+#   "scikit-learn",
 #   "scipy"
 # ]
 # ///
@@ -25,10 +26,13 @@ import requests
 import base64
 import argparse
 import tabulate
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.tree import DecisionTreeRegressor
 
 # Constants
 AIPROXY_TOKEN = os.getenv("AIPROXY_TOKEN")
-OPENAI_MODEL = "gpt-4o-mini"  # This can be made dynamic as needed
+OPENAI_MODEL = "gpt-4o-mini"
 IMAGE_SIZE = (512, 512)
 
 # Ensure API key is set
@@ -66,22 +70,29 @@ def perform_advanced_analysis(data):
     numeric_data = data.select_dtypes(include=['number'])
     analysis_results = {}
 
-    # T-test between the first two numeric columns
     if numeric_data.shape[1] >= 2:
         col1, col2 = numeric_data.columns[:2]
+        
+        # T-test
         t_stat, p_val = ttest_ind(data[col1].dropna(), data[col2].dropna())
         analysis_results["t_test"] = {"t_stat": t_stat, "p_value": p_val}
 
-        # Linear regression between the first two numeric columns
+        # Linear regression
         slope, intercept, r_value, p_value, std_err = linregress(data[col1], data[col2])
-        analysis_results["regression"] = {
-            "slope": slope, "intercept": intercept, "r_value": r_value,
-            "p_value": p_value, "std_err": std_err
-        }
+        analysis_results["regression"] = {"slope": slope, "intercept": intercept, "r_value": r_value, "p_value": p_value, "std_err": std_err}
 
-        # Pearson Correlation for the first two numeric columns
+        # Pearson correlation
         corr, _ = pearsonr(data[col1].dropna(), data[col2].dropna())
         analysis_results["pearson_corr"] = {"correlation": corr}
+
+        # Decision Tree Regression (Advanced)
+        model = DecisionTreeRegressor()
+        X = data[[col1]].dropna()
+        y = data[col2].dropna()
+        model.fit(X, y)
+        y_pred = model.predict(X)
+        mse = mean_squared_error(y, y_pred)
+        analysis_results["decision_tree"] = {"mse": mse}
     
     return analysis_results
 
@@ -100,10 +111,9 @@ def generate_visualizations(data, folder_name):
     visualization_summary = {}
 
     if not numeric_data.empty:
-        # Color palette for consistency
         sns.set_palette("coolwarm")
 
-        # Generate histograms for numeric columns
+        # Histograms for numeric columns
         for column in numeric_data.columns:
             plt.hist(data[column].dropna(), bins=30, alpha=0.7, label=column)
             plt.title(f"Histogram of {column}")
@@ -121,7 +131,7 @@ def generate_visualizations(data, folder_name):
 
             visualization_summary[column] = f"Histogram of {column} showing frequency distribution."
 
-        # Generate a correlation matrix
+        # Correlation matrix
         correlation_matrix = numeric_data.corr()
         plt.figure(figsize=(10, 8))
         sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap="coolwarm")
@@ -196,7 +206,7 @@ def create_readme(analysis_results, folder_name, ai_summary, visualization_summa
     readme_content = "# Dataset Analysis Report\n\n"
     readme_content += "## Summary\n\n"
     
-    readme_content += ai_summary if ai_summary else "AI summary could not be generated.\n\n"
+    readme_content += ai_summary + "\n\n" if ai_summary else "AI summary could not be generated.\n\n"
     
     # Add Basic Statistics section as a Markdown table
     readme_content += "## Basic Statistics\n\n"
@@ -224,37 +234,42 @@ def create_readme(analysis_results, folder_name, ai_summary, visualization_summa
     readme_path = os.path.join(folder_name, "README.md")
     with open(readme_path, "w") as readme_file:
         readme_file.write(readme_content)
-    
-    print(f"README generated at: {readme_path}")
 
 def main():
     args = handle_arguments()
-
-    # Load dataset
-    data = load_dataset(args.dataset)
-
-    # Create output folder
+    dataset_filepath = args.dataset
+    data = load_dataset(dataset_filepath)
+    
+    # Create folder based on the dataset name (without extension)
     folder_name = os.path.splitext(os.path.basename(args.dataset))[0]
     os.makedirs(folder_name, exist_ok=True)
-
-    # Perform basic and advanced analysis
-    basic_results = perform_basic_analysis(data)
-    advanced_results = perform_advanced_analysis(data)
-
-    # Generate visualizations
+    
+    # Perform analysis
+    analysis_results = perform_basic_analysis(data)
+    advanced_analysis = perform_advanced_analysis(data)
+    
+    # Generate Visualizations
     visualization_summary = generate_visualizations(data, folder_name)
-
-    # Request AI summary
-    prompt_text = dynamic_prompt(data)
-    ai_summary = request_summary_from_openai(prompt_text)
-
-    # Create README file
-    create_readme(basic_results, folder_name, ai_summary, visualization_summary)
-
-    # Analyze images if provided
+    
+    # Handle AI summary
+    prompt = dynamic_prompt(data)
+    ai_summary = request_summary_from_openai(prompt)
+    
+    # Handle image analysis if folder exists
+    image_analysis = []
     if args.images:
         image_analysis = analyze_images(args.images)
-        print("Image Analysis Results:", image_analysis)
+
+    # Generate README with all insights
+    create_readme(
+        analysis_results=analysis_results,
+        folder_name=folder_name,
+        ai_summary=ai_summary,
+        visualization_summary=visualization_summary,
+        image_analysis=image_analysis
+    )
+
+    print(f"Analysis completed. Check the results in {folder_name}/README.md.")
 
 if __name__ == "__main__":
     main()
