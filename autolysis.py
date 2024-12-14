@@ -74,26 +74,35 @@ def perform_advanced_analysis(data):
     return analysis_results
 
 def generate_visualizations(data, folder_name):
-    """Generate visualizations for numeric columns and save them."""
+    """Generate and save visualizations for numeric columns."""
     numeric_data = data.select_dtypes(include=['number'])
 
     if not numeric_data.empty:
+        # Histogram for each numeric column
         for column in numeric_data.columns:
-            plt.hist(data[column].dropna(), bins=30, alpha=0.7, label=column)
-            plt.title(f"Histogram for {column}")
+            plt.figure(figsize=(8, 6))
+            sns.histplot(data[column].dropna(), kde=True, bins=30, color="blue", alpha=0.7)
+            plt.title(f"Distribution of {column}")
             plt.xlabel(column)
             plt.ylabel("Frequency")
-            plt.legend()
             hist_file = os.path.join(folder_name, f"{column}_histogram.png")
             plt.savefig(hist_file)
             plt.close()
             print(f"Saved: {hist_file}")
 
+        # Pairplot for relationships
+        pairplot_file = os.path.join(folder_name, "pairplot.png")
+        sns.pairplot(numeric_data)
+        plt.savefig(pairplot_file)
+        plt.close()
+        print(f"Saved: {pairplot_file}")
+
+        # Correlation heatmap
         correlation_matrix = numeric_data.corr()
         plt.figure(figsize=(10, 8))
-        sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap="coolwarm")
-        plt.title("Correlation Matrix")
-        corr_file = os.path.join(folder_name, "correlation_matrix.png")
+        sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap="coolwarm", cbar=True)
+        plt.title("Correlation Heatmap")
+        corr_file = os.path.join(folder_name, "correlation_heatmap.png")
         plt.savefig(corr_file)
         plt.close()
         print(f"Saved: {corr_file}")
@@ -101,9 +110,21 @@ def generate_visualizations(data, folder_name):
         print("No numeric data available for visualizations.")
 
 def dynamic_prompt(data):
-    """Generate a dynamic prompt for OpenAI summarization."""
+    """Generate a context-rich prompt for OpenAI summarization."""
+    num_rows, num_columns = data.shape
     column_info = ", ".join(data.columns)
-    return f"Analyze a dataset with columns: {column_info}. Provide insights, limitations, and recommendations."
+
+    return (
+        "You are an expert data analyst. "
+        "Analyze the dataset based on the following information: "
+        f"The dataset contains {num_rows} rows and {num_columns} columns with fields: {column_info}. "
+        "Your task is to summarize key insights including:\n"
+        "- Patterns and trends in the data.\n"
+        "- Relationships and correlations among variables.\n"
+        "- Data quality issues such as missing values or outliers.\n"
+        "- Recommendations for next steps and practical applications.\n\n"
+        "Ensure the summary is concise, professional, and actionable for decision-making."
+    )
 
 def narrate_results(summary_text):
     """Generate a narrative using OpenAI via proxy."""
@@ -112,7 +133,7 @@ def narrate_results(summary_text):
         headers = {"Authorization": f"Bearer {AIPROXY_TOKEN}"}
         payload = {
             "model": "gpt-4o-mini",
-            "messages": [{"role": "user", "content": f"Summarize: {summary_text}"}]
+            "messages": [{"role": "user", "content": summary_text}]
         }
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
@@ -122,14 +143,24 @@ def narrate_results(summary_text):
         return None
 
 def create_readme(analysis_results, folder_name, ai_summary):
-    """Generate a README file summarizing the analysis."""
-    readme_content = "# Dataset Analysis Report\n\n"
-    readme_content += "## Summary\n\n"
-    readme_content += ai_summary + "\n\n"
-    readme_content += "## Basic Statistics\n\n"
-    readme_content += str(analysis_results["description"]) + "\n\n"
-    readme_content += "## Missing Values\n\n"
-    readme_content += str(analysis_results["missing_values"]) + "\n\n"
+    """Generate a well-structured README file summarizing the analysis."""
+    readme_content = (
+        "# Dataset Analysis Report\n\n"
+        "## Summary\n\n"
+        f"{ai_summary}\n\n"
+        "## Basic Statistics\n\n"
+        "### Dataset Description\n"
+        f"```\n{analysis_results['description']}\n```\n\n"
+        "### Missing Values\n"
+        f"```\n{analysis_results['missing_values']}\n```\n\n"
+        "## Visualizations\n\n"
+        "- **Histograms**: Distribution of numeric columns.\n"
+        "- **Pairplot**: Relationships between variables.\n"
+        "- **Correlation Heatmap**: Visualizes correlations among numeric columns.\n\n"
+        "### PNG Files\n"
+        "All visualizations are saved in the folder: `{folder_name}`.\n"
+    )
+
     readme_path = os.path.join(folder_name, "README.md")
     with open(readme_path, "w") as readme_file:
         readme_file.write(readme_content)
