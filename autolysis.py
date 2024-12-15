@@ -96,6 +96,44 @@ def perform_advanced_analysis(data):
     
     return analysis_results
 
+def outlier_detection(data):
+    """Detect and analyze outliers in numeric columns."""
+    numeric_data = data.select_dtypes(include=["number"])
+    outliers_analysis = {}
+
+    for column in numeric_data.columns:
+        q1 = numeric_data[column].quantile(0.25)
+        q3 = numeric_data[column].quantile(0.75)
+        iqr = q3 - q1
+        lower_bound = q1 - 1.5 * iqr
+        upper_bound = q3 + 1.5 * iqr
+
+        outliers = numeric_data[(numeric_data[column] < lower_bound) | (numeric_data[column] > upper_bound)][column]
+        outlier_impact = (
+            "potential errors, unusual cases, or influential factors in the dataset. "
+            "These could significantly affect statistical analyses like mean or regression results."
+            if len(outliers) > 0
+            else "no significant impact on this column."
+        )
+
+        outliers_analysis[column] = {
+            "lower_bound": lower_bound,
+            "upper_bound": upper_bound,
+            "outliers": outliers.tolist(),
+            "impact_analysis": outlier_impact,
+        }
+
+    return outliers_analysis
+
+def pair_plots(data, folder_name):
+    """Generate pair plots for numeric columns."""
+    numeric_data = data.select_dtypes(include=['number'])
+    pair_plot_file = os.path.join(folder_name, "pair_plots.png")
+    sns.pairplot(numeric_data)
+    plt.savefig(pair_plot_file)
+    plt.close()
+    return pair_plot_file
+
 def resize_image(img_path, size=IMAGE_SIZE):
     """Resize image to specific size."""
     try:
@@ -184,51 +222,116 @@ def analyze_images(image_folder):
 def dynamic_prompt(data):
     """Generate dynamic prompt based on dataset structure."""
     columns = ", ".join(data.columns)
-    return f"Analyze a dataset with columns: {columns}. Provide insights and potential implications."
+    return f"Analyze a dataset with columns: {columns}. Provide insights and potential implications. No conclusion"
 
-def request_summary_from_openai(prompt):
-    """Request analysis summary from OpenAI."""
+def request_summary_from_openai(prompt, is_conclusion=False):
+    """Request analysis summary or conclusion from OpenAI."""
     try:
         url = "https://aiproxy.sanand.workers.dev/openai/v1/chat/completions"
         headers = {"Authorization": f"Bearer {AIPROXY_TOKEN}"}
+        
+        # Adjust the prompt for conclusion
+        if is_conclusion:
+            prompt = f"Provide a detailed conclusion based on the following analysis:\n{prompt}"
+
         payload = {
             "model": OPENAI_MODEL,
-            "messages": [{"role": "user", "content": f"Summarize: {prompt}"}]
+            "messages": [{"role": "user", "content": prompt}]
         }
+        
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
         return response.json()["choices"][0]["message"]["content"]
     except Exception as e:
         raise ValueError(f"Error during API call: {e}")
 
-def create_readme(analysis_results, folder_name, ai_summary, visualization_summary, image_analysis=None):
+def generate_conclusion_prompt(basic_analysis, advanced_analysis, outliers, visualization_summary):
+    """Generate a detailed prompt to request a conclusion from OpenAI."""
+    prompt = "Here is the dataset analysis:\n\n"
+    
+    # Add Basic Analysis
+    prompt += "### Basic Analysis\n"
+    prompt += f"Dataset Description:\n{basic_analysis['description'].to_string()}\n\n"
+    prompt += f"Missing Values:\n{basic_analysis['missing_values'].to_string()}\n\n"
+    
+    # Add Advanced Analysis
+    prompt += "### Advanced Statistical Findings\n"
+    for key, value in advanced_analysis.items():
+        prompt += f"- {key}: {value}\n"
+    
+    # Add Outliers Analysis
+    prompt += "\n### Outliers Analysis\n"
+    for column, data in outliers.items():
+        prompt += (
+            f"- {column}: {len(data['outliers'])} outliers detected "
+            f"(lower bound: {data['lower_bound']}, upper bound: {data['upper_bound']}).\n"
+        )
+    
+    # Add Visualizations
+    prompt += "\n### Visualization Insights\n"
+    for key, value in visualization_summary.items():
+        prompt += f"- {key}: {value}\n"
+    
+    # Request a Conclusion
+    prompt += (
+        "\nBased on this analysis, provide a conclusion in one para.\n"
+    )
+    return prompt
+
+
+def create_readme(basic_analysis, analysis_results, folder_name, ai_summary, visualization_summary, outliers, pair_plot_file, image_analysis=None,  conclusion=None):
     """Create README file with analysis summaries and results."""
     readme_content = "# Dataset Analysis Report\n\n"
-    readme_content += "## Summary\n\n"
-    
-    readme_content += ai_summary + "\n\n" if ai_summary else "AI summary could not be generated.\n\n"
-    
+   
     # Add Basic Statistics section as a Markdown table
     readme_content += "## Basic Statistics\n\n"
-    description_df = analysis_results["description"]
+    description_df = basic_analysis["description"]
     description_markdown = description_df.to_markdown(index=True)  # Convert DataFrame to Markdown
     readme_content += description_markdown + "\n\n"
     
     # Add Missing Values section as a Markdown table
     readme_content += "## Missing Values\n\n"
-    missing_values_df = analysis_results["missing_values"]
+    missing_values_df = basic_analysis["missing_values"]
     missing_values_markdown = missing_values_df.to_markdown()  # Convert missing values DataFrame to Markdown
     readme_content += missing_values_markdown + "\n\n"
-
+    
+    # Add Outliers section
+    readme_content += "## Outliers Detection\n\n"
+    for column, data in outliers.items():
+        readme_content += f"### {column}\n"
+        readme_content += (
+                f"- **Bounds:** Lower Bound = {data['lower_bound']}, Upper Bound = {data['upper_bound']}\n"
+                f"- **Number of Outliers:** {len(data['outliers'])}\n"
+                f"- **Analysis:** Outliers in '{column}' could indicate {data['impact_analysis']}.\n\n"
+            )
+    
+    # Add Pair Plot
+    readme_content += "## Pair Plots\n\n"
+    readme_content += f"![Pair Plots]({pair_plot_file})\n\n"
+    
+    # Add Significant Findings (only advanced analysis results)
+    readme_content += "## Significant Findings\n\n"
+    for analysis_type, result in analysis_results.items():
+        readme_content += f"### {analysis_type}\n"
+        readme_content += f"Result: {result}\n\n"
+    
     # Add Visualizations section
     readme_content += "## Visualizations\n\n"
     for vis, desc in visualization_summary.items():
         readme_content += f"### {vis}\n{desc}\n\n"
 
+    
     if image_analysis:
         readme_content += "## Image Analysis\n\n"
         for img_file, analysis in image_analysis:
             readme_content += f"### {img_file}\nAnalysis: {analysis}\n\n"
+    
+    readme_content += "## Summary\n\n"
+    readme_content += ai_summary + "\n\n" if ai_summary else "AI summary could not be generated.\n\n"
+
+        # Add Conclusion
+    readme_content += "## Conclusion\n\n"
+    readme_content += conclusion + "\n\n" if conclusion else "Conclusion could not be generated.\n\n"
 
     # Write to README.md file
     readme_path = os.path.join(folder_name, "README.md")
@@ -239,37 +342,47 @@ def main():
     args = handle_arguments()
     dataset_filepath = args.dataset
     data = load_dataset(dataset_filepath)
-    
-    # Create folder based on the dataset name (without extension)
+
+    # Create output folder
     folder_name = os.path.splitext(os.path.basename(args.dataset))[0]
     os.makedirs(folder_name, exist_ok=True)
-    
-    # Perform analysis
-    analysis_results = perform_basic_analysis(data)
-    advanced_analysis = perform_advanced_analysis(data)
-    
-    # Generate Visualizations
+
+    # Perform analyses
+    basic_analysis_results = perform_basic_analysis(data)
+    advanced_analysis_results = perform_advanced_analysis(data)
+    outliers = outlier_detection(data)
     visualization_summary = generate_visualizations(data, folder_name)
+    pair_plot_file = pair_plots(data, folder_name)
+
+    # Generate dynamic prompt and request AI summary
+    dynamic_prompt_content = dynamic_prompt(data)
+    ai_summary = request_summary_from_openai(dynamic_prompt_content)
+
+    # Create a summary for the conclusion
+    conclusion_prompt = generate_conclusion_prompt(
+        basic_analysis_results, advanced_analysis_results, outliers, visualization_summary
+    )
     
-    # Handle AI summary
-    prompt = dynamic_prompt(data)
-    ai_summary = request_summary_from_openai(prompt)
-    
-    # Handle image analysis if folder exists
-    image_analysis = []
+    # Request conclusion
+    conclusion = request_summary_from_openai(conclusion_prompt, is_conclusion=True)
+
+    # Analyze images if provided
+    image_analysis = None
     if args.images:
         image_analysis = analyze_images(args.images)
 
-    # Generate README with all insights
+    # Create README
     create_readme(
-        analysis_results=analysis_results,
-        folder_name=folder_name,
-        ai_summary=ai_summary,
-        visualization_summary=visualization_summary,
-        image_analysis=image_analysis
+        basic_analysis_results,
+        advanced_analysis_results,
+        folder_name,
+        ai_summary,
+        visualization_summary,
+        outliers,
+        pair_plot_file,
+        image_analysis=image_analysis,
+        conclusion=conclusion,
     )
-
-    print(f"Analysis completed. Check the results in {folder_name}/README.md.")
 
 if __name__ == "__main__":
     main()
